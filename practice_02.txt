@@ -1,0 +1,70 @@
+select employee.ID, person_name, city, street
+	from employee, works
+	where employee.ID = works.ID and company_name = 'First Bank Corporation';
+
+select employee.ID, person_name, city, street
+	from employee, works
+	where employee.ID = works.ID and company_name = 'First Bank Corporation' and salary>10000;
+
+select employee.ID, person_name, city, street
+	from employee, works
+	where employee.ID = works.ID and company_name != 'First Bank Corporation';
+
+select employee.ID
+	from employee, works
+	where employee.ID = works.ID and salary>(
+		select max(salary)
+			from works
+			where company_name = 'Small Bank Corporation'
+	);
+
+select company_name
+	from company
+	where city = (
+		select city
+			from company
+			where company_name = 'Small Bank Corporation'
+	);
+
+select company_name
+	from (
+		select company_name, count(ID)
+			from works
+			group by company_name
+	)as empnum(company_name, num)
+	where num = (
+		select max(num)
+			from (
+				select company_name, count(ID)
+					from works
+					group by company_name
+			)as empnum(company_name, num)
+	);
+
+select company_name
+	from (
+		select company_name, avg(salary)
+			from works
+			group by company_name
+	)as avgsal(company_name, avgsalary)
+	where avgsalary > (
+		select avg(salary)
+			from works
+			where company_name = 'First Bank Corporation'
+			group by company_name
+	);
+
+update instructor
+	set salary = salary * 1.1
+	where dept_name = 'Comp. Sci.'
+
+delete from course
+where course_id not in (
+	select distinct course_id
+		from section
+);
+
+insert into instructor(ID, name, dept_name, salary)
+	select ID, name, dept_name, 10000 as salary
+		from student
+		where tot_cred > 100

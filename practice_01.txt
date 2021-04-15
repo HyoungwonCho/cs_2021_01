@@ -1,0 +1,48 @@
+select title 
+	from course
+	where dept_name = 'Comp. Sci.' and course.credits = 3;
+	
+select distinct takes.ID
+	from takes, teaches, instructor
+	where takes.course_id = teaches.course_id and teaches.ID = instructor.ID and name = 'Srinivasan';
+	
+select max (salary)
+	from instructor;
+	
+select course_id, sec_id, count(ID)
+	from takes
+	where semester = 'Fall' and year = 2017
+	group by course_id, sec_id;
+
+create table grade_points (
+	grade varchar(2),
+	points numeric(2,1),
+	primary key (grade)
+);
+
+insert into grade_points
+	values ('A+', 4.3), ('A', 4.0), ('A-', 3.7), ('B+', 3.3), ('B', 3.0), ('B-', 2.7), ('C+', 2.3), ('C', 2.0), ('C-', 1.7), ('D+', 1.3), ('D', 1.0), ('D-', 0.7), ('F', 0.0);
+
+select sum(points*credits) as tot_gp
+	from takes, course, grade_points
+	where takes.course_id = course.course_id and ID = '12345' and takes.grade = grade_points.grade;
+
+select round(sum(points*credits) / sum(credits), 2)
+	from takes, course, grade_points
+	where takes.course_id = course.course_id and ID = '12345' and takes.grade = grade_points.grade;
+
+select ID, round(sum(points*credits) / sum(credits), 2) as GPA
+	from takes, course, grade_points
+	where takes.course_id = course.course_id and takes.grade = grade_points.grade
+	group by ID
+	order by ID;
+
+select ID, GPA
+	from(
+		select ID, round(sum(points*credits) / sum(credits), 2)
+			from takes, course, grade_points
+			where takes.course_id = course.course_id and takes.grade = grade_points.grade
+			group by ID
+	)as id_gpa(ID, GPA)
+	where GPA>3.0
+	order by ID;
